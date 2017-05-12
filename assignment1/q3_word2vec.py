@@ -104,6 +104,9 @@ def negSamplingCostAndGradient(predicted, target, outputVectors, dataset,
     indices.extend(getNegativeSamples(target, dataset, K))
 
     ### YOUR CODE HERE
+    grad = np.zeros(outputVectors.shape)
+    gradPred = np.zeros(predicted.shape)
+
     labels = np.array([1] + [-1 for k in range(K)])
     vecs = outputVectors[indices,:]
     
@@ -114,7 +117,7 @@ def negSamplingCostAndGradient(predicted, target, outputVectors, dataset,
     gradPred = delta.reshape((1,K+1)).dot(vecs).flatten()
     gradtemp = delta.reshape((K+1,1)).dot(predicted.reshape(
         (1,predicted.shape[0])))
-    for k in xrange(K+1):
+    for k in range(K+1):
         grad[indices[k]] += gradtemp[k,:]
     ### END YOUR CODE
 
@@ -197,8 +200,8 @@ def word2vec_sgd_wrapper(word2vecModel, tokens, wordVectors, dataset, C,
     cost = 0.0
     grad = np.zeros(wordVectors.shape)
     N = wordVectors.shape[0]
-    inputVectors = wordVectors[:N/2,:]
-    outputVectors = wordVectors[N/2:,:]
+    inputVectors = wordVectors[:N//2,:]
+    outputVectors = wordVectors[N//2:,:]
     for i in range(batchsize):
         C1 = random.randint(1,C)
         centerword, context = dataset.getRandomContext(C1)
@@ -212,8 +215,8 @@ def word2vec_sgd_wrapper(word2vecModel, tokens, wordVectors, dataset, C,
             centerword, C1, context, tokens, inputVectors, outputVectors,
             dataset, word2vecCostAndGradient)
         cost += c / batchsize / denom
-        grad[:N/2, :] += gin / batchsize / denom
-        grad[N/2:, :] += gout / batchsize / denom
+        grad[:N//2, :] += gin / batchsize / denom
+        grad[N//2:, :] += gout / batchsize / denom
 
     return cost, grad
 

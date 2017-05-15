@@ -64,7 +64,7 @@ def getRegularizationValues():
     """
     values = None   # Assign a list of floats in the block below
     ### YOUR CODE HERE
-    vakues = [0.0, 0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01]
+    values = [0.0, 0.00001, 0.00003, 0.0001, 0.0003, 0.001, 0.003, 0.01]
     ### END YOUR CODE
     return sorted(values)
 
@@ -91,14 +91,15 @@ def chooseBestModel(results):
 
 
     ### YOUR CODE HERE 
-    bestResult = None
+    best_dev = 0
     BEST_REGULARIZATION = None
-    BEST_WEIGHTS = None
     for result in results:
         if result["dev"] > best_dev:
-            bestResult = result["dev"]
-            BEST_REGULARIZATION = result["reg"]
-            BEST_WEIGHTS = result["weights"]
+            best_dev = result["dev"]
+            bestResult = result
+            #bestResult = result["dev"]
+            #BEST_REGULARIZATION = result["reg"]
+            #BEST_WEIGHTS = result["weights"]
     ### END YOUR CODE
 
     return bestResult
@@ -146,12 +147,13 @@ def outputConfusionMatrix(features, labels, clf, filename):
 def outputPredictions(dataset, features, labels, clf, filename):
     """ Write the predictions to file """
     pred = clf.predict(features)
-    ###
-    #with open(filename, "w") as f:
-    #    print >> f, "True\tPredicted\tText"
-    #    for i in range(len(dataset)):
-    #        print >> f, "%d\t%d\t%s" % (
-    #            labels[i], pred[i], " ".join(dataset[i][0]))
+    
+    with open(filename, "w") as f:
+        #print ("True\tPredicted\tText", file = f)
+        f.write("True\tPredicted\tText")
+        for i in range(len(dataset)):
+            #print ("%d\t%d\t%s" % (labels[i], pred[i], " ".join(dataset[i][0])), f)
+            f.write("%d\t%d\t%s" % (labels[i], pred[i], " ".join(dataset[i][0])))
 
 
 def main(args):
@@ -176,7 +178,7 @@ def main(args):
     nTrain = len(trainset)
     trainFeatures = np.zeros((nTrain, dimVectors))
     trainLabels = np.zeros((nTrain,), dtype=np.int32)
-    for i in xrange(nTrain):
+    for i in range(nTrain):
         words, trainLabels[i] = trainset[i]
         trainFeatures[i, :] = getSentenceFeatures(tokens, wordVectors, words)
 
@@ -185,7 +187,7 @@ def main(args):
     nDev = len(devset)
     devFeatures = np.zeros((nDev, dimVectors))
     devLabels = np.zeros((nDev,), dtype=np.int32)
-    for i in xrange(nDev):
+    for i in range(nDev):
         words, devLabels[i] = devset[i]
         devFeatures[i, :] = getSentenceFeatures(tokens, wordVectors, words)
 
@@ -194,7 +196,7 @@ def main(args):
     nTest = len(testset)
     testFeatures = np.zeros((nTest, dimVectors))
     testLabels = np.zeros((nTest,), dtype=np.int32)
-    for i in xrange(nTest):
+    for i in range(nTest):
         words, testLabels[i] = testset[i]
         testFeatures[i, :] = getSentenceFeatures(tokens, wordVectors, words)
 
@@ -244,6 +246,7 @@ def main(args):
     print ("")
 
     bestResult = chooseBestModel(results)
+    #print (bestResult)
     print ("Best regularization value: %0.2E" % bestResult["reg"])
     print ("Test accuracy (%%): %f" % bestResult["test"])
 

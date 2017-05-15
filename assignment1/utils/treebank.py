@@ -142,7 +142,13 @@ class StanfordSentiment:
         for i in range(self.numSentences()):
             sentence = sentences[i]
             full_sent = " ".join(sentence).replace('-lrb-', '(').replace('-rrb-', ')')
-            sent_labels[i] = labels[dictionary[full_sent]]
+            ### Below code was changed due to some issues with dictionary and sentences
+            ### for example "the clichés" in dictionary is "the clichÃ©s" in sentences
+            ### label 0 corresponds to 0.5 sentiment or neutral
+            try:
+                sent_labels[i] = labels[dictionary[full_sent]]
+            except:
+                sent_labels[i] = 0
 
         self._sent_labels = sent_labels
         return self._sent_labels
